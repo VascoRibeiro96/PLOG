@@ -1,0 +1,21 @@
+aluno(joao, paradigmas).
+aluno(maria, paradigmas).
+aluno(joel, lab2).
+aluno(joel, estruturas).
+
+frequenta(joao, feup).
+frequenta(maria, feup).
+frequenta(joel, ist).
+
+professor(carlos, paradigmas).
+professor(ana_paula, estruturas).
+professor(pedro, lab2).
+
+funcionario(pedro, ist).
+funcionario(ana_paula, feup).
+funcionario(carlos, feup).
+
+
+alunos(X, A) :- aluno(A,C), professor(X,C).
+pessoas(X, A) :- frequenta(A,X) ; funcionario(A,X).
+colega(P1, P2) :- ((funcionario(P1, U) , funcionario(P2, U)) ; (frequenta(P1, U) , frequenta(P2, U)) ; (aluno(P1, C), aluno(P2, C))), P1 \= P2.
