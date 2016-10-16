@@ -1,17 +1,26 @@
-board( [ [a, b, c],
-	     [d, e, f],
-	     [g, h, i] ] ).
+board([[r,r,d,v],
+		[r,d,p,v],
+		[d,p,p,v],
+		[v,v,v,v],
+		[v,v,v,v],
+		[v,p,p,d],
+		[v,p,d,r],
+		[v,d,r,r]
+		]).
+
 
 display_board([L1|Ls]):-
-	write('|----------|'), nl,
+	write(' |---------------|'), nl,
 	write(' | '), display_line(L1), nl,
 	display_board(Ls).
 
 display_board([]):-
-	write('|----------|'), nl.
+	write(' |---------------|'), nl.
 
 display_line([E1|Es]):-
 	write(E1), write(' | '),
 	display_line(Es).
 
 display_line([]).
+
+play_game(X):-board(X), display_board(X).
