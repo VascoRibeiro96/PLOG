@@ -35,9 +35,6 @@ display_line([E1|Es]):-
 
 display_line([]).
 
-play_game(X):-board(X), display_board(X).
-
-
 
 
 %-------Defines what counts as a piece-------%
@@ -72,41 +69,26 @@ nth1(Col, BoarDifLineine, Piece).
 %--------------------------------------------%
 
 
-
-
-
-%            POR IMPLEMENTAR:                %
-%------Verifica validade do movimento--------%
-
-canMove(InitLine, InitCol, DestLine, DestCol):-
-	hasPiece(InitLine, InitCol), %Checka se a posiçao indicada tem uma peça
-	%Verificar validade do movimento:
-
-%--------------------------------------------%
-
-
-
-
 %            POR IMPLEMENTAR:                %
 %-------------Mover uma peça-----------------% 
 
 %---Verifica peças entre posições (entender e alterar)------------%
 
-	check_path_col(B, Nl, C, Nc, Inc):-
+check_path_col(B, Nl, C, Nc, Inc) :-
     Fc is Nc - Inc,
 		(C = Fc -> write('path_col valido\n'), true;
 		Next is C + Inc,
 		getelem(B, Nl, Next, Elem),
 		(Elem \= 's' -> write('path col invalido\n'), false; check_path_col(B, Nl, Next, Nc, Inc))).
 
-	check_path_line(B, L, Nl, Nc, Inc):-
+check_path_line(B, L, Nl, Nc, Inc) :-
     Fl is Nl - Inc,
 		(L = Fl -> write('path_line valido\n'), true;
 		Next is L + Inc,
 		getelem(B, Next, Nc, Elem),
 		(Elem \= 's' -> write('path line invalido\n'), false; check_path_line(B, Next, Nl, Nc, Inc))).
 
-	check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
+check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
     Fl is Nl - IncL,
     Fc is Nc - IncC,
 		(L = Fl, C = Fc -> write('path_line_col valido\n'), true;
@@ -186,24 +168,24 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 	getPiece(Board, Line, Col, Piece),
 	write(Piece),
 	(
-		Piece = 'v' -> write('peça inválida, espaço vazio\n'), askMove(Board, InitLine1, InitCol1, DestLine1, DestCol1)
+		Piece = 'v' -> write('peça inválida, espaço vazio\n'), askMove(Board);
 		Piece = 'p' -> Index is 0;
 		Piece = 'd' -> Index is 1;
 		Piece = 'r' -> Index is 2
 	),
-	(
+	
 		Index = 0 -> (pawn_can_move(Board, InitLine, InitCol, DestLine, DestCol), replace(Board , InitLine , InitCol , "s" , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
 		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol), replace(Board , InitLine , InitCol , "s" , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
-		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol), replace(Board , InitLine , InitCol , "s" , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
+		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol), replace(Board , InitLine , InitCol , "s" , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ))
 	
-	)
+	.
 
 
 
 
 %------Pedir movimento ao utilizador---------%
 
-askMove(Board, InC, InL, DeC, DeL) :-
+askMove(Board) :-
 	write('Line of the piece you want to move (0-7)'), nl,
 	readInt(InitLine),
 	write('Column of the piece you want to move (0-3)'), nl,
@@ -215,3 +197,5 @@ askMove(Board, InC, InL, DeC, DeL) :-
 	movePiece(Board, InitLine, InitCol, DestLine, DestCol). 
 
 %--------------------------------------------%
+
+play_game(X):- board(X), display_board(X), askMove(Board).
