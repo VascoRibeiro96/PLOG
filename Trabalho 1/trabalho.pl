@@ -164,7 +164,7 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 	getPiece(Board, InitLine, InitCol, Piece),
 	write(Piece),
 	(
-		Piece = 'v' -> write('peça inválida, espaço vazio\n'), askMove(Board);
+		Piece = 'v' -> write('espaco vazio\n'), askMove(Board);
 		Piece = 'p' -> Index is 0;
 		Piece = 'd' -> Index is 1;
 		Piece = 'r' -> Index is 2
