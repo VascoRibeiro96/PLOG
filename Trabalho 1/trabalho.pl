@@ -204,13 +204,13 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 %------Pedir movimento ao utilizador---------%
 
 askMove(Board, InC, InL, DeC, DeL) :-
-	write('Line of the piece you want to move (0-7), nl,
+	write('Line of the piece you want to move (0-7)'), nl,
 	readInt(InitLine),
-	write('Column of the piece you want to move (0-3), nl,
+	write('Column of the piece you want to move (0-3)'), nl,
 	readInt(InitCol),
-	write('Line of the destination (0-7), nl,
+	write('Line of the destination (0-7)'), nl,
 	readInt(DestLine),
-	write('Column of the destination (0-3), nl,
+	write('Column of the destination (0-3)'), nl,
 	readInt(DestCol),
 	movePiece(Board, InitLine, InitCol, DestLine, DestCol). 
 
