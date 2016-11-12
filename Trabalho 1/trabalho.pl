@@ -12,11 +12,6 @@ board([ [r,r,d,v],
 
 %--------Testar se é assim a sintaxe----------%
 
-write('r'):- write('R').
-write('d'):- write('D').
-write('p'):- write('P').
-write('v'):- write(' ').
-
 %---------------------------------------------%
 
 
@@ -63,8 +58,8 @@ onBoard(Line, Col):-
 %---Retorna a peça na posiçao---%
 
 getPiece(Board, Line, Col, Piece):-
-nth1(Line, Board, BoarDifLineine),
-nth1(Col, BoarDifLineine, Piece).
+nth1(Line, Board, BoarDifLine),
+nth1(Col, BoarDifLine, Piece).
 
 %--------------------------------------------%
 
@@ -78,14 +73,14 @@ check_path_col(B, Nl, C, Nc, Inc) :-
     Fc is Nc - Inc,
 		(C = Fc -> write('path_col valido\n'), true;
 		Next is C + Inc,
-		getelem(B, Nl, Next, Elem),
+		getPiece(B, Nl, Next, Elem),
 		(Elem \= 's' -> write('path col invalido\n'), false; check_path_col(B, Nl, Next, Nc, Inc))).
 
 check_path_line(B, L, Nl, Nc, Inc) :-
     Fl is Nl - Inc,
 		(L = Fl -> write('path_line valido\n'), true;
 		Next is L + Inc,
-		getelem(B, Next, Nc, Elem),
+		getPiece(B, Next, Nc, Elem),
 		(Elem \= 's' -> write('path line invalido\n'), false; check_path_line(B, Next, Nl, Nc, Inc))).
 
 check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
@@ -94,24 +89,25 @@ check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
 		(L = Fl, C = Fc -> write('path_line_col valido\n'), true;
 		NextL is L + IncL,
 		NextC is C + IncC,
-		getelem(B, NextL, NextC, Elem),
+		getPiece(B, NextL, NextC, Elem),
 		(Elem \= 's' -> write('path invalido\n'), false; check_path_line_col(B, NextL, NextC, Nl, Nc, IncL, IncC))).
 
 
 %--Altera valor no Tabuleiro pelo pretendido--%
 
-replace(Board , LineIndex , ColIndex , value , FinalBoard ):-
-  append(LinePfx,[Line|LineSfx],Board),                           % decompõe lista de listas
+replace(Board , LineIndex , ColIndex , value , FinalBoard):-
+  append(LinePfx,[Line|LineSfx],Board),							  % decompõe lista de listas
   length(LinePfx,LineIndex) ,                                     % verifica comprimento
   append(ColPfx,[_|ColSfx],Line) ,                                % decompõe a linha
   length(ColPfx,ColIndex) ,                                       % verifica comprimento
   append(ColPfx,[value|ColSfx],LineNew) ,                         % altera valor pelo pretendido
   append(LinePfx,[LineNew|LineSfx],FinalBoard) .
 
-pawn_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
+pawn_can_move(InitLine, InitCol, DestLine, DestCol):-
 	DifLine is abs(DestLine-InitLine),
 	DifCol is abs(DestCol-InitCol),
-	(DifCol=1,DifLine=1 -> nl ; (write('Jogada invalida\n') ,false)).
+	DifCol=1,DifLine=1 -> nl;
+	(write('Jogada invalida\n'),false).
 
 drone_can_move(Board, InitLine, InitCol, DestLine, DestCol):-	
 
@@ -165,7 +161,7 @@ queen_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
 	
 
 movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
-	getPiece(Board, Line, Col, Piece),
+	getPiece(Board, InitLine, InitCol, Piece),
 	write(Piece),
 	(
 		Piece = 'v' -> write('peça inválida, espaço vazio\n'), askMove(Board);
@@ -174,9 +170,9 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 		Piece = 'r' -> Index is 2
 	),
 	
-		Index = 0 -> (pawn_can_move(Board, InitLine, InitCol, DestLine, DestCol), replace(Board , InitLine , InitCol , "s" , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
-		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol), replace(Board , InitLine , InitCol , "s" , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
-		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol), replace(Board , InitLine , InitCol , "s" , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ))
+		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ), display_board(FinalBoard));
+		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
+		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ))
 	
 	.
 
@@ -184,6 +180,12 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 
 
 %------Pedir movimento ao utilizador---------%
+
+readNewLine :-
+        get_code(T) , (T == 10 -> ! ; readNewLine).
+
+readInt(D) :-
+        get_code(Dt) , D is Dt - 48 , (Dt == 10 -> ! ; readNewLine).
 
 askMove(Board) :-
 	write('Line of the piece you want to move (0-7)'), nl,
@@ -198,4 +200,4 @@ askMove(Board) :-
 
 %--------------------------------------------%
 
-play_game(X):- board(X), display_board(X), askMove(Board).
+play_game(X):- board(X), display_board(X), askMove(X).
