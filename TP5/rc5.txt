@@ -1,0 +1,6 @@
+unificavel([X|Xs], Z, Ys):-
+	\+ X=Z, !, unificavel(Xs, Z, Ys).
+unificavel([],_,[]).
+
+unificavel([X|Xs], Z, [X|Ys]):-
+	unificavel(Xs, Z,Ys).	

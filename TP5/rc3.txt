@@ -1,0 +1,3 @@
+dados(um).
+dados(dois).
+dados(tres). 

@@ -1,0 +1,12 @@
+separa([X|Xs], F, [X|Ys], Zs):-
+		P=.. [F,X], P, !,
+		separa(Xs, F, Ys,Zs).
+
+separa([X|Xs], F, Ys, [X|Zs]):-
+		separa(Xs, F,Ys,Zs).
+
+separa([],_,[],[]).
+
+separa(L,F,LR):- 
+		separa(L,F,L1,L2),
+		append(L1,L2,LR).
