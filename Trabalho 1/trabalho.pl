@@ -4,7 +4,7 @@
 board([ [r,r,d,v],
 	[r,d,p,v],
 	[d,p,p,v],
-	[v,v,p,v],
+	[v,v,v,v],
 	[v,v,v,v],
 	[v,p,p,d],
 	[v,p,d,r],
@@ -274,6 +274,18 @@ movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2,
 
 askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player) :-
 
+	(endGame1Part(Board, 1); endGame2Part(Board, 5)) ->
+		FinalScore1 is 5,
+		FinalScore2 is 3,
+		clear_Screen,
+		display_board(Board), nl, nl,
+		(
+			(FinalScore1 > FinalScore2) -> displayPlayer1Win;
+			(FinalScore1 < FinalScore2) -> displayPlayer2Win;
+			(FinalScore1 = FinalScore2) -> displayDraw
+		),
+	true;
+
 	(
 	Player = 1 -> displayPlayer1Turn;
 	Player = 2 -> displayPlayer2Turn
@@ -291,17 +303,8 @@ askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player) :-
 	NewScore1 is Score1,
 	NewScore2 is Score2,
 	movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player),
-	(endGame1Part(NewBoard, 1); endGame2Part(NewBoard, 5)) ->
-		FinalScore1 is 5,
-		FinalScore2 is 3,
-		clear_Screen,
-		display_board(NewBoard), nl, nl,
-		(
-			(FinalScore1 > FinalScore2) -> displayPlayer1Win;
-			(FinalScore1 < FinalScore2) -> displayPlayer2Win;
-			(FinalScore1 = FinalScore2) -> displayDraw
-		),
-	true;
+
+
 	(
 	Player = 1 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 2);
 	Player = 2 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 1)
@@ -310,7 +313,7 @@ askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player) :-
 
 %--------------------------------------------%
 
-play_game(X):- board(X), 
+play_game(X, Mode):- board(X), 
 	display_board(X), 
 	askMove(X, NewBoard, 0, 0, FinalScore1, FinalScore2, 1),
 	write(Score1), nl.
