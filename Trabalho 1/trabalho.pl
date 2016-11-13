@@ -4,7 +4,7 @@
 board([ [r,r,d,v],
 	[r,d,p,v],
 	[d,p,p,v],
-	[v,v,v,v],
+	[v,v,p,v],
 	[v,v,v,v],
 	[v,p,p,d],
 	[v,p,d,r],
@@ -254,14 +254,14 @@ movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2,
 		ColD is DestCol - 1,
 
 		(
-		(Player = 1, LineI < 5);
-		(Player = 2, LineI > 4)
+		(Player = 1, LineI < 4);
+		(Player = 2, LineI > 3)
 		),
 
 		NewScore1 = Score1,
 		NewScore2 = Score2,
 	
-		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), write(NewScore1), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
+		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
 		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, LineD, ColD, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
 		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, LineD, ColD, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard))
 	
@@ -291,12 +291,21 @@ askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player) :-
 	NewScore1 is Score1,
 	NewScore2 is Score2,
 	movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player),
+	(endGame1Part(NewBoard, 1); endGame2Part(NewBoard, 5)) ->
+		FinalScore1 is 5,
+		FinalScore2 is 3,
+		clear_Screen,
+		display_board(NewBoard), nl, nl,
+		(
+			(FinalScore1 > FinalScore2) -> displayPlayer1Win;
+			(FinalScore1 < FinalScore2) -> displayPlayer2Win;
+			(FinalScore1 = FinalScore2) -> displayDraw
+		),
+	true;
 	(
 	Player = 1 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 2);
 	Player = 2 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 1)
-	),
-	FinalScore1 is Score1,
-	FinalScore2 is Score2.
+	).
 
 
 %--------------------------------------------%
