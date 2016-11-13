@@ -152,21 +152,22 @@ check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
 %---Faz update ao score se for necessario---%
 
 
-update_score(Board, Line, Col, Score1, Score2, NewScore1, NewScore2, Player):-
-  getPiece(Board, Line, Col, Piece),
+update_score(Board, Line, Col, Os1, Ns1, Os2, Ns2, Player):-
+  getPiece(Board, Line, Col, Elem2),
   (
-  	Piece = 'v' -> P is 0;
-    Piece = 'p' -> P is 1;
-    Piece = 'd' -> P is 2;
-    Piece = 'q' -> P is 3
+    Elem2 = 'p' -> P is 1;
+    Elem2 = 'd' -> P is 2;
+    Elem2 = 'q' -> P is 3;
+    P is 0
   ),
-
-  (	
-  	Player = 1 -> NewScore1 is (Score1 + P);
-  	Player = 2 -> NewScore2 is (Score2 + P)
-  )
-.
-
+  (Player = 2 ->
+    (Line > 4 ->
+      Ns2 is (Os2 + P); Ns2 is Os2,nl
+    );
+    (Line < 5 ->
+      Ns1 is (Os1 + P); Ns1 is Os1
+    )
+  ).
 
 
 
@@ -237,11 +238,10 @@ queen_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
 
 	
 
-movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Player):-
+movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player):-
 	getPiece(Board, InitLine, InitCol, Piece),
-	write(Piece),
 	(
-		Piece = 'v' -> write('espaco vazio\n'), askMove(Board);
+		Piece = 'v' -> write('Espaco de origem vazio\n'), askMove(Board, Board, Player);
 		Piece = 'p' -> Index is 0;
 		Piece = 'd' -> Index is 1;
 		Piece = 'r' -> Index is 2
@@ -253,12 +253,17 @@ movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Player):-
 		LineD is DestLine - 1,
 		ColD is DestCol - 1,
 
+		(
+		(Player = 1, LineI < 5);
+		(Player = 2, LineI > 4)
+		),
+
 		NewScore1 = Score1,
 		NewScore2 = Score2,
 	
-		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
-		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
-		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard))
+		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), write(NewScore1), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
+		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, LineD, ColD, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
+		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, LineD, ColD, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard))
 	
 	.
 
@@ -267,24 +272,36 @@ movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Player):-
 
 %------Pedir movimento ao utilizador---------%
 
-askMove(Board, NewBoard, Player) :-
+askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player) :-
+
+	(
+	Player = 1 -> displayPlayer1Turn;
+	Player = 2 -> displayPlayer2Turn
+	),
+
 	nl,
-	write('Line of the piece you want to move (0-7)'), nl,
+	write('Line of the piece you want to move (1-8)'), nl,
 	readInt(InitLine),
-	write('Column of the piece you want to move (0-3)'), nl,
+	write('Column of the piece you want to move (1-4)'), nl,
 	readInt(InitCol),
-	write('Line of the destination (0-7)'), nl,
+	write('Line of the destination (1-8)'), nl,
 	readInt(DestLine),
-	write('Column of the destination (0-3)'), nl,
+	write('Column of the destination (1-4)'), nl,
 	readInt(DestCol),
-	movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Player),
-	Player = 1 -> askMove(NewBoard, NextBoard, 2);
-	Player = 2 -> askMove(NewBoard, NextBoard, 1).
+	NewScore1 is Score1,
+	NewScore2 is Score2,
+	movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player),
+	(
+	Player = 1 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 2);
+	Player = 2 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 1)
+	),
+	FinalScore1 is Score1,
+	FinalScore2 is Score2.
 
 
 %--------------------------------------------%
 
 play_game(X):- board(X), 
 	display_board(X), 
-	askMove(X, NewBoard, 1),
+	askMove(X, NewBoard, 0, 0, FinalScore1, FinalScore2, 1),
 	write(Score1), nl.
