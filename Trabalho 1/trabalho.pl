@@ -189,12 +189,6 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 
 %------Pedir movimento ao utilizador---------%
 
-readNewLine :-
-        get_code(T) , (T == 10 -> ! ; readNewLine).
-
-readInt(D) :-
-        get_code(Dt) , D is Dt - 48 , (Dt == 10 -> ! ; readNewLine).
-
 askMove(Board) :-
 	nl,
 	write('Line of the piece you want to move (0-7)'), nl,

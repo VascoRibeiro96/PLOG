@@ -4,6 +4,17 @@ clear_Screen:-
 	nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,
 	nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl,nl.
 	
+readNewLine :-
+        get_code(T) , (T == 10 -> ! ; readNewLine).
+
+readInt(D) :-
+        get_code(Dt) , D is Dt - 48 , (Dt == 10 -> ! ; readNewLine).	
+	
+readChar(C) :-
+        get_char(C) , char_code(C, Co) , (Co == 10 -> ! ; readNewLine).
+		
+
+	
 main_menu :-
 	game_name,
 	write('                                           '), nl,
@@ -12,11 +23,11 @@ main_menu :-
 	write('   3. Exit                                 '), nl,
 	write('                                           '), nl,
 	write('___________________________________________'), nl,
-	read(Number),
+	readChar(Number),
 	(
-		(Number =:= 3);
-		(Number =:= 2, rules);
-		(Number =:= 1, play_menu)
+		Number = '3';
+		Number = '2' -> rules;
+		Number = '1' -> play_menu
 	).
 	
 
@@ -63,11 +74,11 @@ play_menu:-
 	write('                                           '), nl,
 	write('                                           '), nl,
 	write('___________________________________________'), nl,
-	read(Number),
+	readChar(Number),
 	(
-		(Number =:= 3, main_menu);
-		(Number =:= 2, clear_Screen, play_game(X));
-		(Number =:= 1, clear_Screen, play_game(X))
+		Number = '3' -> main_menu;
+		Number = '2' -> clear_Screen, play_game(X);
+		Number = '1' -> play_game(X)
 	).
 	
 	
