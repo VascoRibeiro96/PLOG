@@ -4,8 +4,8 @@
 board([ [r,r,d,v],
 	[r,d,p,v],
 	[d,p,p,v],
-	[v,v,p,v],
-	[v,v,v,p],
+	[v,v,v,v],
+	[v,v,v,v],
 	[v,p,p,d],
 	[v,p,d,r],
 	[v,d,r,r] ]).
@@ -40,7 +40,7 @@ piece(p).
 
 
 
-%Verifica se a posiçao pertence ao tabuleiro-%
+%Verifica se a posiÃ§ao pertence ao tabuleiro-%
 
 onBoard(Line, Col):-
     Line > 0,
@@ -53,7 +53,7 @@ onBoard(Line, Col):-
 
 
 
-%---Retorna a peça na posiçao---%
+%---Retorna a peÃ§a na posiÃ§ao---%
 
 getPiece(Board, Line, Col, Piece):-
 nth1(Line, Board, BoarDifLine),
@@ -103,7 +103,7 @@ check_queens_2(Board,Line,Col):-
 	
 board_drones(Board, Player):-
 	(
-	Player = 1 -> check_drones_1(Board,1,1);
+	(Player = 1) -> check_drones_1(Board,1,1);
 	Player = 2 -> check_drones_2(Board,5,1)
 	).
 
@@ -123,7 +123,7 @@ check_drones_1(Board,Line,Col):-
 
 
 
-%---Verifica peças entre posições (entender e alterar)------------%
+%---Verifica peÃ§as entre posiÃ§Ãµes (entender e alterar)------------%
 
 check_path_col(B, Nl, C, Nc, Inc) :-
     Fc is Nc - Inc,
@@ -173,9 +173,9 @@ update_score(Board, Line, Col, Score1, Score2, NewScore1, NewScore2, Player):-
 %--Altera valor no Tabuleiro pelo pretendido--%
 
 replace(Board , LineIndex , ColIndex , Value , FinalBoard):-
-  append(LinePfx,[Line|LineSfx],Board),							  % decompõe lista de listas
+  append(LinePfx,[Line|LineSfx],Board),							  % decompÃµe lista de listas
   length(LinePfx,LineIndex) ,                                     % verifica comprimento
-  append(ColPfx,[_|ColSfx],Line) ,                                % decompõe a linha
+  append(ColPfx,[_|ColSfx],Line) ,                                % decompÃµe a linha
   length(ColPfx,ColIndex) ,                                       % verifica comprimento
   append(ColPfx,[Value|ColSfx],LineNew) ,                         % altera valor pelo pretendido
   append(LinePfx,[LineNew|LineSfx],FinalBoard).
@@ -237,7 +237,7 @@ queen_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
 
 	
 
-movePiece(Board, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player):-
+movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Player):-
 	getPiece(Board, InitLine, InitCol, Piece),
 	write(Piece),
 	(
@@ -256,9 +256,9 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1
 		NewScore1 = Score1,
 		NewScore2 = Score2,
 	
-		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
-		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2,  Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
-		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2,  Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard))
+		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
+		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
+		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard))
 	
 	.
 
@@ -267,7 +267,7 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1
 
 %------Pedir movimento ao utilizador---------%
 
-askMove(Board, Score1, Score2, FinalScore1, FinalScore2, Player) :-
+askMove(Board, NewBoard, Player) :-
 	nl,
 	write('Line of the piece you want to move (0-7)'), nl,
 	readInt(InitLine),
@@ -277,18 +277,14 @@ askMove(Board, Score1, Score2, FinalScore1, FinalScore2, Player) :-
 	readInt(DestLine),
 	write('Column of the destination (0-3)'), nl,
 	readInt(DestCol),
-	NewScore1 is Score1,
-	NewScore2 is Score2,
-	movePiece(Board, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player),
-	Player = 1 -> askMove(Board, NewScore1, NewScore2, 2),
-	Player = 2 -> askMove(Board, NewScore1, NewScore2, 1),
-	FinalScore1 is Score1,
-	FinalScore2 is Score2.
+	movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Player),
+	Player = 1 -> askMove(NewBoard, NextBoard, 2);
+	Player = 2 -> askMove(NewBoard, NextBoard, 1).
+
 
 %--------------------------------------------%
 
-play_game(X):- 
-	board(X), 
+play_game(X):- board(X), 
 	display_board(X), 
-	askMove(X, 0, 0, FinalScore1, FinalScore2, 1),
+	askMove(X, NewBoard, 1),
 	write(Score1), nl.
