@@ -84,7 +84,7 @@ endGame2Part(Board, Line):-
 board_queens(Board, Player):-
 	(
 	Player = 1 -> check_queens_1(Board,1,1);
-	Player = 2 -> check_queens_2(Board,5,1);
+	Player = 2 -> check_queens_2(Board,5,1)
 	).
 
 check_queens_1(Board,Line,Col):-
@@ -104,7 +104,7 @@ check_queens_2(Board,Line,Col):-
 board_drones(Board, Player):-
 	(
 	Player = 1 -> check_drones_1(Board,1,1);
-	Player = 2 -> check_drones_2(Board,5,1);
+	Player = 2 -> check_drones_2(Board,5,1)
 	).
 
 check_drones_1(Board,Line,Col):-
@@ -150,6 +150,8 @@ check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
 
 
 %---Faz update ao score se for necessario---%
+
+
 update_score(Board, Line, Col, Score1, Score2, NewScore1, NewScore2, Player):-
   getPiece(Board, Line, Col, Piece),
   (
@@ -162,7 +164,7 @@ update_score(Board, Line, Col, Score1, Score2, NewScore1, NewScore2, Player):-
   (	
   	Player = 1 -> NewScore1 is (Score1 + P);
   	Player = 2 -> NewScore2 is (Score2 + P)
-  ),
+  )
 .
 
 
@@ -254,7 +256,7 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1
 		NewScore1 = Score1,
 		NewScore2 = Score2,
 	
-		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> (update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
+		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
 		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2,  Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
 		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2,  Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard))
 	
