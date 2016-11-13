@@ -95,18 +95,20 @@ check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
 
 %--Altera valor no Tabuleiro pelo pretendido--%
 
-replace(Board , LineIndex , ColIndex , value , FinalBoard):-
+replace(Board , LineIndex , ColIndex , Value , FinalBoard):-
+  write('Hello!'), nl, 
   append(LinePfx,[Line|LineSfx],Board),							  % decompõe lista de listas
   length(LinePfx,LineIndex) ,                                     % verifica comprimento
   append(ColPfx,[_|ColSfx],Line) ,                                % decompõe a linha
   length(ColPfx,ColIndex) ,                                       % verifica comprimento
-  append(ColPfx,[value|ColSfx],LineNew) ,                         % altera valor pelo pretendido
-  append(LinePfx,[LineNew|LineSfx],FinalBoard) .
+  append(ColPfx,[Value|ColSfx],LineNew) ,                         % altera valor pelo pretendido
+  append(LinePfx,[LineNew|LineSfx],FinalBoard),
+  write('Bye!'), nl.
 
 pawn_can_move(InitLine, InitCol, DestLine, DestCol):-
 	DifLine is abs(DestLine-InitLine),
 	DifCol is abs(DestCol-InitCol),
-	DifCol=1,DifLine=1 -> nl;
+	DifCol=1,DifLine=1 -> (nl, true);
 	(write('Jogada invalida\n'),false).
 
 drone_can_move(Board, InitLine, InitCol, DestLine, DestCol):-	
@@ -169,8 +171,14 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 		Piece = 'd' -> Index is 1;
 		Piece = 'r' -> Index is 2
 	),
+
+		LineI is InitLine - 1,
+		ColI is InitCol - 1,
+
+		LineD is DestLine - 1,
+		ColD is DestCol - 1,
 	
-		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ), display_board(FinalBoard));
+		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
 		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
 		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ))
 	
