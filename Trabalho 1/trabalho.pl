@@ -179,8 +179,8 @@ movePiece(Board, InitLine, InitCol, DestLine, DestCol):-
 		ColD is DestCol - 1,
 	
 		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
-		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ));
-		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , InitLine , InitCol , 'v' , Board2), replace(Board2 , DestLine , DestCol , Piece , FinalBoard ))
+		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard));
+		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , FinalBoard ), display_board(FinalBoard))
 	
 	.
 
@@ -196,6 +196,7 @@ readInt(D) :-
         get_code(Dt) , D is Dt - 48 , (Dt == 10 -> ! ; readNewLine).
 
 askMove(Board) :-
+	nl,
 	write('Line of the piece you want to move (0-7)'), nl,
 	readInt(InitLine),
 	write('Column of the piece you want to move (0-3)'), nl,

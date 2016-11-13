@@ -66,8 +66,8 @@ play_menu:-
 	read(Number),
 	(
 		(Number =:= 3, main_menu);
-		(Number =:= 2, play_game(X));
-		(Number =:= 1, play_game(X))
+		(Number =:= 2, clear_Screen, play_game(X));
+		(Number =:= 1, clear_Screen, play_game(X))
 	).
 	
 	
