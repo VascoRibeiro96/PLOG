@@ -40,7 +40,7 @@ piece(p).
 
 
 
-%Verifica se a posi√ßao pertence ao tabuleiro-%
+%Verifica se a posiÁao pertence ao tabuleiro-%
 
 onBoard(Line, Col):-
     Line > 0,
@@ -53,7 +53,7 @@ onBoard(Line, Col):-
 
 
 
-%---Retorna a pe√ßa na posi√ßao---%
+%---Retorna a peÁa na posiÁao---%
 
 getPiece(Board, Line, Col, Piece):-
 nth1(Line, Board, BoarDifLine),
@@ -123,7 +123,7 @@ check_drones_1(Board,Line,Col):-
 
 
 
-%---Verifica pe√ßas entre posi√ß√µes (entender e alterar)------------%
+%---Verifica peÁas entre posiÁıes (entender e alterar)------------%
 
 check_path_col(B, Nl, C, Nc, Inc) :-
     Fc is Nc - Inc,
@@ -173,9 +173,9 @@ update_score(Board, Line, Col, Score1, Score2, NewScore1, NewScore2, Player):-
 %--Altera valor no Tabuleiro pelo pretendido--%
 
 replace(Board , LineIndex , ColIndex , Value , FinalBoard):-
-  append(LinePfx,[Line|LineSfx],Board),							  % decomp√µe lista de listas
+  append(LinePfx,[Line|LineSfx],Board),							  % decompıe lista de listas
   length(LinePfx,LineIndex) ,                                     % verifica comprimento
-  append(ColPfx,[_|ColSfx],Line) ,                                % decomp√µe a linha
+  append(ColPfx,[_|ColSfx],Line) ,                                % decompıe a linha
   length(ColPfx,ColIndex) ,                                       % verifica comprimento
   append(ColPfx,[Value|ColSfx],LineNew) ,                         % altera valor pelo pretendido
   append(LinePfx,[LineNew|LineSfx],FinalBoard).
