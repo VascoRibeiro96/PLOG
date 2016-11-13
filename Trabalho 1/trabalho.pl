@@ -61,6 +61,13 @@ nth1(Col, BoarDifLine, Piece).
 
 %--------------------------------------------%
 
+getRandomPiece(Board, LineI, ColI, Piece):-
+random(1, 8, LineI),
+random(1, 4, ColI),
+getPiece(Board, LineI, ColI, Piece).
+
+
+
 
 endGame1Part(Board, Line):-
 	Line = 5 -> true;
@@ -170,7 +177,6 @@ update_score(Board, Line, Col, Os1, Ns1, Os2, Ns2, Player):-
   ).
 
 
-
 %--Altera valor no Tabuleiro pelo pretendido--%
 
 replace(Board , LineIndex , ColIndex , Value , FinalBoard):-
@@ -208,13 +214,14 @@ drone_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
 	).
 
 queen_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
-	
+				write('Oi'), nl,
+
 	DifLine is DestLine-InitLine,
 	DifCol is DestCol-InitCol,
 	
 	AbsDifLine is abs(DifLine),
 	AbsDifCol is abs(DifCol),
-	
+
 	(
 		DifCol=0,DifLine=0 -> write('Jogada invalida\n') , false;
 
@@ -226,7 +233,6 @@ queen_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
 
 
 		(AbsDifLine \= AbsDifCol -> write('Jogada invalida abs\n'), false; nl),
-
 		(
 			DifLine < 0, DifCol < 0 -> check_path_line_col(Board, InitLine, InitCol, DestLine, DestCol, -1, -1);
 			DifLine < 0, DifCol > 0 -> check_path_line_col(Board, InitLine, InitCol, DestLine, DestCol, -1, 1);
@@ -236,12 +242,47 @@ queen_can_move(Board, InitLine, InitCol, DestLine, DestCol):-
 		)
 	).
 
-	
+randomPlay(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player):-
+
+
+	getRandomPiece(Board, InitLine, InitCol, Piece),
+	(
+	Piece = 'v' -> randomPlay(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player), false;
+	Piece = 'p' -> Index is 0;
+	Piece = 'd' -> Index is 1;
+	Piece = 'r' -> Index is 2
+	),
+
+	random(1, 8, DestLine),
+	random(1, 4, DestCol),
+
+	LineI is InitLine - 1,
+	ColI is InitCol - 1,
+
+	LineD is DestLine - 1,
+	ColD is DestCol - 1,
+
+
+	(
+	(Player = 1, LineI < 4);
+	(Player = 2, LineI > 3);
+	randomPlay(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player)
+	),
+
+	NewScore1 = Score1,
+	NewScore2 = Score2,
+
+	write('Piece: '), write(Piece), write(' | INIT: '), write(InitLine), write(InitCol), write('  |  DEST:'), write(DestLine), write(DestCol), nl,
+	Index = 0 -> ((pawn_can_move(LineI, ColI, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard)); randomPlay(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player), false);
+	Index = 1 -> ((drone_can_move(Board, LineI, ColI, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard)); randomPlay(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player), false);
+	Index = 2 -> ((queen_can_move(Board, LineI, ColI, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard)); randomPlay(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player), false)
+
+	.	
 
 movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player):-
 	getPiece(Board, InitLine, InitCol, Piece),
 	(
-		Piece = 'v' -> write('Espaco de origem vazio\n'), askMove(Board, Board, Player);
+		Piece = 'v' -> write('Espaco de origem vazio\n'), askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player);
 		Piece = 'p' -> Index is 0;
 		Piece = 'd' -> Index is 1;
 		Piece = 'r' -> Index is 2
@@ -255,15 +296,16 @@ movePiece(Board, NewBoard, InitLine, InitCol, DestLine, DestCol, Score1, Score2,
 
 		(
 		(Player = 1, LineI < 4);
-		(Player = 2, LineI > 3)
+		(Player = 2, LineI > 3);
+		askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player)
 		),
 
 		NewScore1 = Score1,
 		NewScore2 = Score2,
 	
-		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
-		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, LineD, ColD, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard));
-		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, LineD, ColD, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard))
+		Index = 0 -> ((pawn_can_move(InitLine, InitCol, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard)); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player));
+		Index = 1 -> ((drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard)); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player));
+		Index = 2 -> ((queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board , LineI , ColI , 'v' , Board2), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard)); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player))
 	
 	.
 
