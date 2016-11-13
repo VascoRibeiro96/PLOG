@@ -10,11 +10,6 @@ board([ [r,r,d,v],
 	[v,p,d,r],
 	[v,d,r,r] ]).
 
-%--------Testar se é assim a sintaxe----------%
-
-%---------------------------------------------%
-
-
 
 display_board([L1|Ls]):-
 	write(' |---------------|'), nl,
@@ -25,8 +20,11 @@ display_board([]):-
 	write(' |---------------|'), nl.
 
 display_line([E1|Es]):-
-	write(E1), write(' | '),
-	display_line(Es).
+	E1 = 'r' -> (write('Q'), write(' | '), 	display_line(Es));
+	E1 = 'd' -> (write('&'), write(' | '), 	display_line(Es));
+	E1 = 'p' -> (write('*'), write(' | '), 	display_line(Es));
+	E1 = 'v' -> (write(' '), write(' | '), 	display_line(Es)).
+
 
 display_line([]).
 
