@@ -102,9 +102,16 @@ displayPlayer1Win:-
 	write('                                           '), nl,
 	write('___________________________________________'), nl.
 
-displayPlayer1Win:-
+displayPlayer2Win:-
 	write('___________________________________________'), nl,
 	write('                                           '), nl,
 	write('              Player 2 Win                 '), nl,
 	write('                                           '), nl,
 	write('___________________________________________'), nl.	
+
+displayDraw:-
+	write('___________________________________________'), nl,
+	write('                                           '), nl,
+	write('                   Draw                    '), nl,
+	write('                                           '), nl,
+	write('___________________________________________'), nl.
