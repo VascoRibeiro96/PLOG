@@ -81,7 +81,30 @@ play_menu:-
 		Number = '1' -> play_game(X)
 	).
 	
+displayPlayer1Turn:-
+	write('___________________________________________'), nl,
+	write('                                           '), nl,
+	write('              Player 1 Turn                '), nl,
+	write('                                           '), nl,
+	write('___________________________________________'), nl.
 	
-	
-	
-	
+displayPlayer2Turn:-
+	write('___________________________________________'), nl,
+	write('                                           '), nl,
+	write('              Player 2 Turn                '), nl,
+	write('                                           '), nl,
+	write('___________________________________________'), nl.
+
+displayPlayer1Win:-
+	write('___________________________________________'), nl,
+	write('                                           '), nl,
+	write('              Player 1 Win                 '), nl,
+	write('                                           '), nl,
+	write('___________________________________________'), nl.
+
+displayPlayer1Win:-
+	write('___________________________________________'), nl,
+	write('                                           '), nl,
+	write('              Player 2 Win                 '), nl,
+	write('                                           '), nl,
+	write('___________________________________________'), nl.	
