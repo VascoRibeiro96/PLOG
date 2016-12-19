@@ -1,6 +1,8 @@
 :- use_module(library(lists)).
 :- use_module(library(random)).
 
+
+
 board([ [r,r,d,v],
 	[r,d,p,v],
 	[d,p,p,v],
@@ -159,22 +161,25 @@ check_path_line_col(B, L, C, Nl, Nc, IncL, IncC):-
 %---Faz update ao score se for necessario---%
 
 
-update_score(Board, Line, Col, Os1, Ns1, Os2, Ns2, Player):-
+update_score(Board, Line, Col, Os1, Os2, Ns1, Ns2, Player):-
   getPiece(Board, Line, Col, Elem2),
   (
-    Elem2 = 'p' -> P is 1;
+    Elem2 = 'v' -> P is 0;
+	Elem2 = 'p' -> P is 1;
     Elem2 = 'd' -> P is 2;
-    Elem2 = 'q' -> P is 3;
-    P is 0
+    Elem2 = 'q' -> P is 3
   ),
+  
   (Player = 2 ->
-    (Line > 4 ->
-      Ns2 is (Os2 + P); Ns2 is Os2,nl
+    (Line > 4 -> (write(Os2),write(Ns2),
+      Ns2 is (Os2 + P)), write(Ns2); Ns2 is Os2
     );
     (Line < 5 ->
-      Ns1 is (Os1 + P); Ns1 is Os1
+      (write(Os1), write(Ns2), Ns1 is (Os1 + P)), write(Ns2); Ns1 is Os1
     )
-  ).
+  ),
+  write(Ns1), nl, write(Ns2)
+  .
 
 
 %--Altera valor no Tabuleiro pelo pretendido--%
@@ -276,9 +281,9 @@ randomPlay(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player):-
 
 	write('Piece: '), write(Piece), write(' | INIT: '), write(InitLine), write(InitCol), write('  |  DEST:'), write(DestLine), write(DestCol), nl,
 	(	
-		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player));
-		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player));
-		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), update_score(Board, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player))
+		Index = 0 -> (pawn_can_move(InitLine, InitCol, DestLine, DestCol)->  replace(Board , LineI , ColI , 'v' , Board2), update_score(Board2, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player));
+		Index = 1 -> (drone_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), update_score(Board2, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player));
+		Index = 2 -> (queen_can_move(Board, InitLine, InitCol, DestLine, DestCol)-> replace(Board , LineI , ColI , 'v' , Board2), update_score(Board2, DestLine, DestCol, Score1, Score2, NewScore1, NewScore2, Player), replace(Board2 , LineD , ColD , Piece , NewBoard ), display_board(NewBoard); askMove(Board, NewBoard, Score1, Score2, NewScore1, NewScore2, Player))
 	).
 		
 
@@ -351,7 +356,7 @@ askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player) :-
 
 
 	(
-	Player = 1 -> randomPlay(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 2);
+	Player = 1 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 2);
 	Player = 2 -> askMove(NewBoard, Board2, NewScore1, NewScore2, FinalScore1, FinalScore2, 1)
 	).
 
@@ -360,5 +365,5 @@ askMove(Board, NewBoard, Score1, Score2, FinalScore1, FinalScore2, Player) :-
 
 play_game(X):- board(X), 
 	display_board(X), 
-	askMove(X, NewBoard, 0, 0, FinalScore1, FinalScore2, 1),
+	askMove(X, NewBoard, 1, 1, FinalScore1, FinalScore2, 1),
 	write(Score1), nl.
