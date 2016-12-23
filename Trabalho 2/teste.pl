@@ -26,13 +26,22 @@ go:-
 
    sumlist(C,Tmp),
    domain(Z,0,Tmp),
-
    
    %Z #= sum(([nth1(C[J,K])*(Tables[J]#=Tables[K]), J in 1..M, K in 1..M, J < K]),
-
-   %foreach(between(1,N,I),sum([Tables[J], #= I : J in 1..M])), #<= A
      
    %foreach(between(1,N,I),sum([(C[J,K] #> 0)*(Tables[J] #= I)*(Tables[K] #= I): J in 1..M, K in 1..M])), #>= B
+
+   %Calcular valor global de afinidade	
+   calculateGlobalAfinity(Tables, Z),
+
+   %Maximo de convidados por mesa
+   checkMaxGuests(Tables, 0, A),	
+
+   %Minimo de convidados por mesa
+   checkMinGuests(Tables, 0, B),
+
+   %Todos os convidados sentados
+   checkGuestsSeated(Tables, 0, C, 0),
 
    element(1,Tables, Elem1),
    Elem1 #= 1,
@@ -41,10 +50,10 @@ go:-
 
    (Maximize = 1->(
       writeln(maximize),
-	  labeling([], Vars));
+	  labeling([max(Z)], Vars));
    (
       writeln(minimize),
-      labeling([], Vars))),
+      labeling([min(Z)], Vars))),
 
    write(Z), ln,
    write(Tables), ln,
@@ -62,15 +71,43 @@ go:-
 
    nl.
 
-decreasing(List):-
-   List is 1.
-   %apagar linha de cima
-   %foreach(I in 2..List.length) List[I-1] #>= List[I] end.
+checkMinGuests(Tables, Index, Min):-
+	length(NumTables, Tables),
+	Index < NumTables, %Para o ciclo quando o indice ultrapassar os limites da lista de mesas
+	IndexNext is Index + 1,
+	nth0(Index, Tables, CurrentTable),
+	length(L, CurrentTable),
+	L #>= Min,
+	checkMinGuests(Tables, IndexNext, Min).
 
-increasing(List):-
-   List is 1.
-   %apagar linha de cima
-   %foreach(I in 2..List.length) List[I-1] #<= List[I] end.
+
+checkMinGuests(_, _, _).
+
+checkMaxGuests(Tables, Index, Max):-
+	length(NumTables, Tables),
+	Index < NumTables, %Para o ciclo quando o indice ultrapassar os limites da lista de mesas
+	IndexNext is Index + 1,
+	nth0(Index, Tables, CurrentTable),
+	length(L, CurrentTable),
+	L #<= Max,
+	checkMaxGuests(Tables, IndexNext, Max).
+
+checkMaxGuests(_, _, _).
+
+checkGuestsSeated(Tables, Index, Guests, Total):-
+	length(NumTables, Tables),
+	Index < NumTables, %Para o ciclo quando o indice ultrapassar os limites da lista de mesas
+	IndexNext is Index + 1,
+	nth0(Index, Tables, CurrentTable),
+	length(L, CurrentTable), %Quantos estao sentados nesta mesa
+	Total2 is Total + L,
+	checkGuestsSeated(Tables, IndexNext, Guests, Total2).
+
+
+checkGuestsSeated(_, _, Guests, Total):-
+	length(L, Guests),
+	NumGuests is L / 2,
+	Total #= NumGuests. %Todos os convidados tem de estar sentados
 
 
 guests(M):- 
