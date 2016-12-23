@@ -51,7 +51,6 @@ fila12(L):-
 	Vermelho = 3,
 	Azul = 4,
 	
-	
 	global_cardinality(L, [Amarelo-4, Verde-2, Vermelho-3, Azul-3]),
 	
 	element(1, L, PrimeiraCor),
