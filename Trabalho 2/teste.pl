@@ -32,7 +32,8 @@ go:-
    %foreach(between(1,N,I),sum([(C[J,K] #> 0)*(Tables[J] #= I)*(Tables[K] #= I): J in 1..M, K in 1..M])), #>= B
 
    %Calcular valor global de afinidade	
-   calculateGlobalAfinity(Tables, Z),
+   calculateGlobalAfinity(Tables, 0, C, 0, GlobalAffinity),
+   Z #= GlobalAffinity,
 
    %Maximo de convidados por mesa
    checkMaxGuests(Tables, 0, A),	
@@ -109,6 +110,43 @@ checkGuestsSeated(_, _, Guests, Total):-
 	NumGuests is L / 2,
 	Total #= NumGuests. %Todos os convidados tem de estar sentados
 
+calculateGlobalAfinity(Tables, Index, Guests, CurrentAffinity, FinalAffinity):-
+	length(NumTables, Tables),
+	Index < NumTables, %Para o ciclo quando o indice ultrapassar os limites da lista de mesas
+	IndexNext is Index + 1,
+	nth0(Index, Tables, CurrentTable),
+	calculateTableAffinity(CurrentTable, 0, 1, Guests, 0, TableAffinity),
+	NextAffinity is CurrentAffinity + TableAffinity,
+	calculateGlobalAfinity(Tables, IndexNext, Guests, NextAffinity, FinalAffinity).
+
+calculateGlobalAfinity(_, _, _, CurrentAffinity, FinalAffinity):-
+	FinalAffinity #= CurrentAffinity.	
+
+calculateTableAffinity(Table, Guests, Index1, Index2, CurrentAffinity, TableAffinity):-
+	length(L, Tables),
+	Index1 < L,
+	Index2 < L,
+	nth0(Index1, Table, Guest1),
+	nth0(Index2, Table, Guest2),
+	nth0(Guest1, Guests, Line),
+	nth0(Line, Guest2, Relation),
+	Affinity is Relation * Relation,
+	NextAffinity is CurrentAffinity +  Affinity,
+	NextIndex2 is Index2 + 1,
+	calculateTableAffinity(Table, Guests, Index1, NextIndex2, NextAffinity, TableAffinity).
+	
+
+calculateTableAffinity(Table, Guests, Index1, Index2, CurrentAffinity, TableAffinity):-
+	length(L, Table),
+	Index1 < L,
+	NextIndex1 is Index1 + 1,
+	NextIndex2 is NextIndex1 + 1,
+	calculateTableAffinity(Table, Guests, NextIndex1, NextIndex2, CurrentAffinity, TableAffinity).
+
+
+
+calculateTableAffinity(_, _, _, _, CurrentAffinity, TableAffinity):-
+	TableAffinity is CurrentAffinity.	
 
 guests(M):- 
 M is
