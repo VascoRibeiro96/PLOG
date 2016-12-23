@@ -32,8 +32,7 @@ go:-
    %foreach(between(1,N,I),sum([(C[J,K] #> 0)*(Tables[J] #= I)*(Tables[K] #= I): J in 1..M, K in 1..M])), #>= B
 
    %Calcular valor global de afinidade	
-   calculateGlobalAfinity(Tables, 0, C, 0, GlobalAffinity),
-   Z #= GlobalAffinity,
+   calculateGlobalAfinity(Tables, 0, C, 0, Z),
 
    %Maximo de convidados por mesa
    checkMaxGuests(Tables, 0, A),	
