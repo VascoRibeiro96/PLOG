@@ -14,6 +14,10 @@ go:-
    min_tables(B),
    num_tables(N),
 
+   names2(Guests, NumGuests),
+   domain(Guests, 0, (NumGuests - 1)),
+   all_different(Guests),
+   
    guests(C),
    length(M,C),
 
@@ -26,6 +30,8 @@ go:-
 
    sumlist(C,Tmp),
    domain(Z,0,Tmp),
+   
+   
    
    %Z #= sum(([nth1(C[J,K])*(Tables[J]#=Tables[K]), J in 1..M, K in 1..M, J < K]),
      
@@ -171,46 +177,47 @@ M is
 names(Names):-
 Names is
 [
- "Deb        mother of the bride",
- "John       father of the bride",
- "Martha     sister of the bride",
- "Travis     boyfriend of Martha",
- "Allan      grandfather of the bride",
- "Lois       wife of Allan (the grandfather of the bride)",
- "Jayne      aunt of the bride",
- "Brad       uncle of the bride",
- "Abby       cousin of the bride",
- "Mary Helen mother of the groom",
- "Lee        father of the groom",
- "Annika     sister of the groom",
- "Carl       brother of the groom",
- "Colin      brother of the groom",
- "Shirley    grandmother of the groom",
- "DeAnn      aunt of the groom",
- "Lori       aunt of the groom"
+ "Debora     mae da Maria",
+ "Joao       pai da Maria",
+ "Marta      irma da Maria",
+ "Tiago      namorado da Marta",
+ "Andre      avo da Maria",
+ "Luisa      mulher do Andre (avo da Maria)",
+ "Joana      tia da Maria",
+ "Bernardo   tio da Maria",
+ "Ana        prima da Maria",
+ "Helena     mae do Gustavo",
+ "Leonardo   pai do Gustavo",
+ "Anita      irma do Gustavo",
+ "Carlos     irmao do Gustavo",
+ "Cristiano  irmao do Gustavo",
+ "Susana     avo do Gustavo",
+ "Daniela    tia do Gustavo",
+ "Lurdes     tia do Gustavo"
 ].
 
-names2(Names):-
+names2(Names, NumGuests):-
 Names is
 [
- "Deb (B)",
- "John (B)",
- "Martha (B)",
- "Travis (B)",
- "Allan (B)",
- "Lois (B)",
- "Jayne (B)",
- "Brad (B)",
- "Abby (B)",
- "Mary Helen (G)",
- "Lee (G)",
- "Annika (G)",
- "Carl (G)",
- "Colin (G)",
- "Shirley (G)",
- "DeAnn (G)",
- "Lori (G)"
-].
+ "Debora",
+ "Joao",
+ "Marta",
+ "Tiago",
+ "Andre",
+ "Luisa",
+ "Joana",
+ "Bernardo",
+ "Ana",
+ "Helena",
+ "Leonardo",
+ "Anita",
+ "Carlos",
+ "Cristiano",
+ "Susana",
+ "Daniela",
+ "Lurdes"
+],
+length(Names,NumGuests).
 
 
 num_tables(N):- N is 5.
