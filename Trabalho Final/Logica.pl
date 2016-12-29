@@ -1,19 +1,18 @@
 %--------------------LIBRARIES----------------%
-:- prolog:set_current_directory('C:/Users/vasco/Desktop/Feup - DOCS/3º Ano/PLOG/Trabalho Final').
 :- use_module(library(clpfd)).
 :- use_module(library(lists)).
 	
 
-fillTables(NumberofPersons,Guests,NumberofTables,Tables):-
-	domain(Tables,1,NumberofPersons),
+fillTables(NumberofGuests,Guests,NumberofTables,Tables):-
+	domain(Tables,1,NumberofGuests),
 	all_different(Tables),
-	restrictions(Tables,1,NumberofTables,NumberofPersons,Guests),
+	restrictions(Tables,1,NumberofTables,NumberofGuests,Guests),
 	labeling([],Tables).
 	
 %----------------Restrictions-----------------%
 restrictions(_,Index,NumberofTables,_,_):-
 	Index >= NumberofTables.
-restrictions(Tables,Index,NumberofTables,NumberofPersons,Guests):-
+restrictions(Tables,Index,NumberofTables,NumberofGuests,Guests):-
 	Index < NumberofTables,
 	element(Index,Tables,P),
 	NextInd is Index +1,
@@ -23,16 +22,16 @@ restrictions(Tables,Index,NumberofTables,NumberofPersons,Guests):-
 	nth1(P,Guests,[_,_,GId,Int,H]),
 	nth1(Pi,Guests,[_,_,GIdi,Inti,Hi]),
 	(GId \= 0 -> GId #= GIdi;Int #= Inti #\/ H #= Hi),
-	restrictions(Tables,NextIndex,NumberofTables,NumberofPersons,Guests).
+	restrictions(Tables,NextIndex,NumberofTables,NumberofGuests,Guests).
 
-checkSeats(NumberofPersons,ListofTables):-
+checkSeats(NumberofGuests,ListofTables):-
 	getNumberSeats(ListofTables,NumberofSeats),
-	NumberofPersons > NumberofSeats,
+	NumberofGuests > NumberofSeats,
 	write('Sem espaco para todos. \n'),nl.
 	
-checkSeats(NumberofPersons,ListofTables):-
+checkSeats(NumberofGuests,ListofTables):-
 	getNumberSeats(ListofTables,NumberofSeats),
-	NumberofPersons =< NumberofSeats,
+	NumberofGuests =< NumberofSeats,
 	write('Espaco para todos. \n'),nl.
 
 
